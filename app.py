@@ -17,8 +17,6 @@ documents = []
 
 pdf_files = [file for file in os.listdir(".") if file.endswith(".pdf")]
 
-st.write("PDF Files Found:", pdf_files)
-
 for file in pdf_files:
     loader = PyPDFLoader(file)
     documents.extend(loader.load())
