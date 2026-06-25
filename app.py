@@ -10,13 +10,23 @@ from langchain_groq import ChatGroq
 # GROQ API KEY
 os.environ["GROQ_API_KEY"] = "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"
 
+st.title("Zyro Dynamics HR Help Desk")
+
 # Load PDFs
 documents = []
 
-for file in os.listdir("."):
-    if file.endswith(".pdf"):
-        loader = PyPDFLoader(file)
-        documents.extend(loader.load())
+pdf_files = [file for file in os.listdir(".") if file.endswith(".pdf")]
+
+st.write("PDF Files Found:", pdf_files)
+
+for file in pdf_files:
+    loader = PyPDFLoader(file)
+    documents.extend(loader.load())
+
+# Check documents
+if len(documents) == 0:
+    st.error("No PDF documents loaded.")
+    st.stop()
 
 # Split text
 text_splitter = RecursiveCharacterTextSplitter(
@@ -25,6 +35,11 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 
 chunks = text_splitter.split_documents(documents)
+
+# Check chunks
+if len(chunks) == 0:
+    st.error("No text chunks created.")
+    st.stop()
 
 # Embeddings
 embeddings = HuggingFaceEmbeddings(
@@ -71,9 +86,6 @@ Answer:
     response = llm.invoke(prompt)
 
     return response.content
-
-# Streamlit UI
-st.title("Zyro Dynamics HR Help Desk")
 
 question = st.text_input("Ask an HR Question")
 
